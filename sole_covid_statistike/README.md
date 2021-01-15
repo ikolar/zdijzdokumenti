@@ -30,3 +30,10 @@ Prav tako bi vas na podlagi Zakona o dostopu do informacij javnega značaja pros
 Spoštovani,
 
 Priloženo vam pošiljamo dokumentacijo, ki ste jo zahtevali v vaši zahtevi za dostop do informacij javnega značaja z dne 28. 12. 2020. Povezavo s strojno berljivimi podatki vam predvidoma pošljemo v torek prihodnji teden.
+
+
+## Razlaga
+
+ * Uc.tsv - dogodki v zvezi z učenci
+ * Zap.tsv - dogodki v zvezi z zaposlenimi
+ * Odd.tsv - dogodki v zvezi z oddelki
