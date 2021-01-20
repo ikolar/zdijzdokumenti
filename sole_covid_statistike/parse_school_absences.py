@@ -144,7 +144,7 @@ def merge_confirmed_infections():
 
     with codecs.open("school-absences.csv", "w", "utf-8") as csvfile:
         csvwriter = csv.writer(
-            csvfile, delimiter="\t", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
         )
         header = [
             "date",
