@@ -12,22 +12,14 @@ import csv
 def parse_api(filename):
     header = [
         "date",
-        "cases.confirmed",
         "cases.confirmed.todate",
         "cases.active",
-        "cases.closed.todate",
-        "quarantine.confirmed",
         "quarantine.confirmed.todate",
         "quarantine.active",
-        "quarantine.closed",
-        "cases.attendees.confirmed",
         "cases.attendees.confirmed.todate",
         "cases.attendees.active",
-        "cases.attendees.closed",
-        "cases.employees.confirmed",
         "cases.employees.confirmed.todate",
         "cases.employees.active",
-        "cases.employees.closed",
     ]
     rows = []
     rows.append(header)
@@ -89,22 +81,14 @@ def parse_api(filename):
         rows.append(
             [
                 "{}-{}-{}".format(u["year"], u["month"], u["day"]),
-                cases_confirmed,
                 cases_confirmed_todate,
                 cases_active,
-                cases_confirmed_todate - cases_active,
-                quarantines_confirmed,
                 quarantines_confirmed_todate,
                 quarantines_active,
-                quarantines_confirmed_todate - quarantines_active,
-                cases_active_attendees,
                 cases_confirmed_todate_attendees,
                 cases_active_attendees,
-                cases_confirmed_todate_attendees - cases_active_attendees,
-                cases_active_employees,
                 cases_confirmed_todate_employees,
                 cases_active_employees,
-                cases_confirmed_todate_employees - cases_active_employees,
             ]
         )
 
