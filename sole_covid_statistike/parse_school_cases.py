@@ -20,14 +20,14 @@ def parse_api(filename):
         "quarantine.confirmed.todate",
         "quarantine.active",
         "quarantine.closed",
-        "cases.confirmed.attendees",
-        "cases.confirmed.todate.attendees",
-        "cases.active.attendees",
-        "cases.closed.attendees",
-        "cases.confirmed.employees",
-        "cases.confirmed.todate.employees",
-        "cases.active.employees",
-        "cases.closed.employees",
+        "cases.attendees.confirmed",
+        "cases.attendees.confirmed.todate",
+        "cases.attendees.active",
+        "cases.attendees.closed",
+        "cases.employees.confirmed",
+        "cases.employees.confirmed.todate",
+        "cases.employees.active",
+        "cases.employees.closed",
     ]
     rows = []
     rows.append(header)
