@@ -136,7 +136,7 @@ def merge():
     geo_openstreetmap, geo_rpe = getmanualgeo()
     for row in rows:
         zavsif = row[1]
-        row[10] = geo_openstreetmap.get(zavsif, "")
+        row[10] = geo_openstreetmap.get(zavsif, "").strip(" \n\r")
         row[11] = geo_rpe.get(zavsif, "")
 
     with codecs.open("dict-schools.csv", "w", "utf-8") as f:
