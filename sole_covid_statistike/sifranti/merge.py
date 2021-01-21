@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 """
-    Merge all the dictionaries from
-    https://paka3.mss.edus.si/registriweb/default.aspx into one.
+    Merge all the lists from
+    https://paka3.mss.edus.si/registriweb/default.aspx into one big
+    dictionary of educational institutions.
+
+    Add some location information.
 """
 
 import codecs
@@ -10,6 +13,12 @@ from bs4 import BeautifulSoup
 
 
 def parse_table(filename, code):
+    """
+    Parse a html table of educational institutions (vrtci, osnovne šole,
+    idr).
+
+    The table for srednje šole is a bit different.
+    """
     with codecs.open(filename, "r", "windows-1250") as f:
         html = f.read()
     soup = BeautifulSoup(html, features="html.parser")
@@ -23,7 +32,7 @@ def parse_table(filename, code):
         maticni = None
         for row in rows[1:]:
             cells = row.find_all("td")
-            values = list(map(lambda c: c.text.strip("\r\n\t\xa0"), cells))
+            values = list(map(lambda c: c.text.strip("\r\n\t\xa0 "), cells))
             values = values[0:12]
 
             if "vrtcev" in filename or "osnovnih šol." in filename:
@@ -39,12 +48,6 @@ def parse_table(filename, code):
 
             parsed.append(values)
 
-    elif (
-        "osnovnih šol za otroke s posebnimi potrebami" in filename
-        or "glasbenih šol" in filename
-    ):
-        pass
-
     elif "srednjih šol." in filename:
         region = None
         previous = None
@@ -57,24 +60,24 @@ def parse_table(filename, code):
             elif "ZAVSIF" in cells[0].text:
                 # header
                 continue
+
+            values = list(map(lambda c: c.text.strip("\r\n\t\xa0 "), cells))
+            values.insert(2, region)
+            values = values[0:12]
+
+            # mark maticni zavod
+            if previous and previous[2] in values[2]:
+                values.insert(1, previous[0])
             else:
-                values = list(map(lambda c: c.text.strip("\r\n\t\xa0"), cells))
-                values.insert(2, region)
-                values = values[0:12]
+                values.insert(1, "")
 
-                # mark maticni zavod
-                if previous and previous[2] in values[2]:
-                    values.insert(1, previous[0])
-                else:
-                    values.insert(1, "")
+            # obcina is missing
+            # guess with posta
+            values.insert(4, values[7])
 
-                # obcina is missing
-                # guess with posta
-                values.insert(4, values[7])
+            previous = values
 
-                previous = values
-
-                parsed.append(values)
+            parsed.append(values)
 
     # postprocessing
     for values in parsed:
@@ -82,6 +85,7 @@ def parse_table(filename, code):
         values.insert(0, code)
 
         # add geo placeholders
+        # they will be filled later
         values.insert(10, "")  # openstreetmap
         values.insert(11, "")  # Register prostorskih enot - solski okolis
 
@@ -117,20 +121,20 @@ def getmanualgeo():
 
 
 def merge():
+    """
+    Merge all dictionaries into one.
+    """
+
     rows = []
     rows.extend(parse_table("seznam_osnovnih šol.html", "OŠ"))
     rows.extend(parse_table("seznam_vrtcev.html", "vrtec"))
-    rows.extend(
-        parse_table("seznam_osnovnih šol za otroke s posebnimi potrebami.html", "OŠPP")
-    )
+    file = "seznam_osnovnih šol za otroke s posebnimi potrebami.html"
+    rows.extend(parse_table(file, "OŠPP"))
     rows.extend(parse_table("seznam_glasbenih šol.html", "GŠ"))
     rows.extend(parse_table("seznam_srednjih šol.html", "SŠ"))
     rows.extend(parse_table("seznam_višjih strokovnih šol.html", "VSŠ"))
-    rows.extend(
-        parse_table(
-            "seznam_zavodov za otroke in mladostnike s posebnimi potrebami.html", "VSŠ"
-        )
-    )
+    file = "seznam_zavodov za otroke in mladostnike s posebnimi potrebami.html"
+    rows.extend(parse_table(file, "ZAV"))
 
     # add geo
     geo_openstreetmap, geo_rpe = getmanualgeo()
@@ -139,6 +143,7 @@ def merge():
         row[10] = geo_openstreetmap.get(zavsif, "").strip(" \n\r")
         row[11] = geo_rpe.get(zavsif, "")
 
+    # write
     with codecs.open("dict-schools.csv", "w", "utf-8") as f:
         writer = csv.writer(f, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(
